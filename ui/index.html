@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TreeVisionAI — Leaf Species Detection & Habitat Explorer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-group">
+        <div class="logo-icon">🌿</div>
+        <div>
+          <h1 class="brand-title">TreeVisionAI</h1>
+          <p class="brand-subtitle">Deep Learning Leaf Species Detection & Habitat Mapping</p>
+        </div>
+      </div>
+
+      <div class="header-badges">
+        <div class="pill-badge active-model">
+          <span class="pulse-dot"></span>
+          <span>EfficientNet-B0 (92.9% Val Acc)</span>
+        </div>
+        <div class="pill-badge">
+          <span>7 Native Species</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="main-grid">
+
+      <!-- Left Column: Upload & Quick Samples -->
+      <section class="glass-panel" id="upload-panel">
+        <div class="panel-heading">
+          <span class="panel-heading-icon">📷</span>
+          <span>Input Leaf Image</span>
+        </div>
+
+        <!-- Dropzone -->
+        <div class="dropzone" id="dropzone" role="button" tabindex="0">
+          <span class="dropzone-icon">🍃</span>
+          <h3 class="dropzone-title">Upload Leaf Photo</h3>
+          <p class="dropzone-desc">Drag & drop your leaf image here, or click to browse</p>
+          <button type="button" class="btn-upload" id="browse-btn">Select Image File</button>
+          <input type="file" id="file-input" class="file-input-hidden" accept="image/png, image/jpeg, image/jpg, image/webp">
+        </div>
+
+        <!-- Preview Container -->
+        <div class="preview-wrapper" id="preview-wrapper">
+          <img id="preview-img" class="preview-image" src="" alt="Selected Leaf">
+          <div class="preview-overlay">
+            <button type="button" class="btn-reset" id="reset-btn" title="Remove photo">✕</button>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <button type="button" class="btn-detect" id="detect-btn" disabled>
+          <span>Run Species Detection</span>
+          <span>⚡</span>
+        </button>
+
+        <!-- Quick Sample Picker for Lab Demo -->
+        <div class="samples-section">
+          <div class="samples-heading">Or Try Preloaded Test Samples:</div>
+          <div class="sample-chips-grid">
+            <div class="sample-chip" data-species="neem" data-src="/static/samples/neem.jpg">
+              <img src="/static/samples/neem.jpg" alt="Neem">
+              <span>Neem</span>
+            </div>
+            <div class="sample-chip" data-species="peepal" data-src="/static/samples/peepal.jpg">
+              <img src="/static/samples/peepal.jpg" alt="Peepal">
+              <span>Peepal</span>
+            </div>
+            <div class="sample-chip" data-species="mango" data-src="/static/samples/mango.jpg">
+              <img src="/static/samples/mango.jpg" alt="Mango">
+              <span>Mango</span>
+            </div>
+            <div class="sample-chip" data-species="ashoka" data-src="/static/samples/ashoka.jpg">
+              <img src="/static/samples/ashoka.jpg" alt="Ashoka">
+              <span>Ashoka</span>
+            </div>
+            <div class="sample-chip" data-species="banyan" data-src="/static/samples/banyan.jpg">
+              <img src="/static/samples/banyan.jpg" alt="Banyan">
+              <span>Banyan</span>
+            </div>
+            <div class="sample-chip" data-species="raintree" data-src="/static/samples/raintree.jpg">
+              <img src="/static/samples/raintree.jpg" alt="Rain Tree">
+              <span>Rain Tree</span>
+            </div>
+            <div class="sample-chip" data-species="rubber" data-src="/static/samples/rubber.jpg">
+              <img src="/static/samples/rubber.jpg" alt="Rubber">
+              <span>Rubber</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Results & Location -->
+      <section class="glass-panel" id="results-panel">
+        <div class="panel-heading">
+          <span class="panel-heading-icon">🔍</span>
+          <span>Detection & Habitat Analysis</span>
+        </div>
+
+        <!-- Initial Placeholder State -->
+        <div class="placeholder-view" id="placeholder-view">
+          <div class="placeholder-icon">🌱</div>
+          <h3>Awaiting Leaf Upload</h3>
+          <p>Upload a photograph of a tree leaf or choose a preloaded sample on the left to trigger the EfficientNet-B0 inference engine.</p>
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading-box" id="loading-box">
+          <div class="spinner"></div>
+          <p>Extracting CNN feature representations and inferring species...</p>
+        </div>
+
+        <!-- Active Results View -->
+        <div class="results-view" id="results-view">
+
+          <!-- Hero Identification Header -->
+          <div class="result-hero">
+            <div class="hero-tag">Identified Species</div>
+            <div class="hero-species-name" id="res-display-name">Neem Tree</div>
+            <div class="hero-scientific-name" id="res-scientific-name">Azadirachta indica</div>
+            <div class="hero-stats">
+              <div class="hero-stat-badge">Confidence: <strong id="res-confidence">98.5%</strong></div>
+              <div class="hero-stat-badge">Family: <span id="res-family">Meliaceae</span></div>
+              <div class="hero-stat-badge">Status: <span id="res-status">Least Concern</span></div>
+            </div>
+          </div>
+
+          <!-- DEDICATED LOCATION & WHERE IT WAS FOUND CARD -->
+          <div class="location-card">
+            <div class="location-title">
+              <span>📍</span>
+              <span>Where It Was Found & Native Habitat</span>
+            </div>
+            <div class="location-detail-row">
+              <span class="location-label">Geographic Origin / Distribution: </span>
+              <span class="location-text" id="res-found-in">Native to the Indian subcontinent...</span>
+            </div>
+            <div class="location-detail-row">
+              <span class="location-label">Typical Growth Environments: </span>
+              <span class="location-text" id="res-habitats">Roadsides, dry deciduous woodlands...</span>
+            </div>
+            <div id="exif-location-container" style="display: none;">
+              <a href="#" target="_blank" class="gps-badge" id="res-gps-link">
+                <span>🛰️ View Image Capture Location on Google Maps</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Botanical Morphology Card -->
+          <div class="botanical-grid">
+            <div class="botanical-item">
+              <div class="botanical-label">Leaf Morphology</div>
+              <div class="botanical-val" id="res-leaf-features">Pinnately compound with curved, serrated leaflets.</div>
+            </div>
+            <div class="botanical-item">
+              <div class="botanical-label">Ecological Importance</div>
+              <div class="botanical-val" id="res-ecological">Natural biopesticide, drought-hardy shade tree.</div>
+            </div>
+          </div>
+
+          <!-- Softmax Probabilities Bar Chart -->
+          <div class="probabilities-box">
+            <div class="prob-title">
+              <span>Top Softmax Class Probabilities</span>
+              <span style="font-size: 11px; font-weight: normal; color: var(--text-dim);">Multi-Class Softmax Output</span>
+            </div>
+            <div id="probabilities-container">
+              <!-- Dynamically populated rows -->
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Lab Project Architecture Explainer Section -->
+    <footer class="explainer-box">
+      <div class="explainer-title">
+        <span>⚙️</span>
+        <span>How This CNN Species Detection Works (Deep Learning Lab Pipeline)</span>
+      </div>
+      <div class="pipeline-steps">
+        <div class="pipeline-step">
+          <div class="step-num">Step 1 • Preprocessing</div>
+          <div class="step-name">Input Transformation</div>
+          <div class="step-desc">Resized to 224×224, center cropped, and normalized using ImageNet channel mean & standard deviation.</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">Step 2 • Feature Learning</div>
+          <div class="step-name">EfficientNet-B0 Backbone</div>
+          <div class="step-desc">16 MBConv blocks with Squeeze-and-Excitation attention learn leaf textures, venation, and margin geometry.</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">Step 3 • Representation</div>
+          <div class="step-name">Global Avg Pooling (GAP)</div>
+          <div class="step-desc">Reduces 7×7 feature maps to a 1280-dimensional feature embedding vector with 20% dropout regularizer.</div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">Step 4 • Auto-Labelling</div>
+          <div class="step-name">Softmax Classification</div>
+          <div class="step-desc">Linear projection maps 1280 features to 7 species logits; softmax calculates confidence distribution for automatic labeling.</div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+﻿# ========================================
+# TreeVisionAI — Requirements
+# ========================================
+
+# Web Framework & API Server
+fastapi>=0.100.0
+uvicorn[standard]>=0.22.0
+python-multipart>=0.0.6
+
+# Deep Learning (PyTorch)
+# Install torch with CUDA if GPU is available:
+# pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
+torch>=2.0.0
+torchvision>=0.15.0
+
+# Image Processing
+pillow>=9.0.0
+opencv-python>=4.7.0
+imagehash>=4.3.1
+PyWavelets>=1.4.1
+
+# Data & Utilities
+numpy>=1.24.0
+pandas>=2.0.0
+tqdm>=4.65.0
+requests>=2.28.0
+
+# Evaluation, Metrics & Plotting
+scikit-learn>=1.2.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Documentation & Report Generation
+reportlab>=4.0.0
